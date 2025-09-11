@@ -65,7 +65,7 @@ services:
     networks:
       - app-network
 
-  # Composer（コマンド実行用）
+  # Composer
   composer:
     image: composer:latest
     container_name: composer
@@ -82,14 +82,20 @@ services:
     container_name: nextjs-frontend
     working_dir: /usr/src/app
     volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules   # 匿名ボリュームで権限問題回避
+      - ./frontend:/usr/src/app          # プロジェクトソース
+      - /usr/src/app/node_modules       # 匿名ボリュームで権限回避
+      - nextjs_cache:/usr/src/app/.next # .next キャッシュをコンテナ専用に
     networks:
       - app-network
-    command: sh -c "npm install && npm run build && npm run export && tail -f /dev/null"
+    ports:
+      - "3000:3000"                     # 開発サーバー用
+    # command: sh -c "tail -f /dev/null"  # コンテナ常駐
+    # command: sh -c "npm install && npm run build && npm run export && tail -f /dev/null"
+    command: sh -c "npm install && npm run dev"
 
 volumes:
   dbdata:
+  nextjs_cache:
 
 networks:
   app-network:
