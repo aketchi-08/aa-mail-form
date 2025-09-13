@@ -11,6 +11,8 @@ services:
     volumes:
       - ./backend:/var/www
       - ./docker/php/myphp.ini:/usr/local/etc/php/conf.d/myphp.ini
+      - storage_framework:/var/www/storage/framework
+      - bootstrap_cache:/var/www/bootstrap/cache
     networks:
       - app-network
     depends_on:
@@ -89,6 +91,9 @@ services:
       - app-network
     ports:
       - "3000:3000"                     # 開発サーバー用
+    environment:
+      - CHOKIDAR_USEPOLLING=true         # ← これを追加！
+      - WATCHPACK_POLLING=true           # ← 補助でこれも入れると安定する
     # command: sh -c "tail -f /dev/null"  # コンテナ常駐
     # command: sh -c "npm install && npm run build && npm run export && tail -f /dev/null"
     command: sh -c "npm install && npm run dev"
@@ -96,6 +101,8 @@ services:
 volumes:
   dbdata:
   nextjs_cache:
+  storage_framework:
+  bootstrap_cache:
 
 networks:
   app-network:
