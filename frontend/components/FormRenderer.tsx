@@ -27,7 +27,11 @@ export default function FormRenderer({ fields, slug }: FormRendererProps) {
     try {
       const res = await submitForm(slug, data);
       alert(res.message);
-      e.currentTarget.reset();
+      
+      // 安全にリセット
+      if (e.currentTarget) {
+        e.currentTarget.reset();
+      }
     } catch (err: any) {
       alert(`送信に失敗しました: ${err.message}`);
     } finally {
