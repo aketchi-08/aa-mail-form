@@ -12,10 +12,12 @@ export async function getForm(slug: string) {
   return res.json();
 }
 
-export async function submitForm(slug: string, data: any) {
-  if (!API_URL) throw new Error("API_URL is not defined");
+const API_URL_BROWSER = process.env.NEXT_PUBLIC_API_URL_BROWSER;
 
-  const res = await fetch(`${API_URL}/forms/${slug}/submit`, {
+export async function submitForm(slug: string, data: any) {
+  if (!API_URL_BROWSER) throw new Error("API_URL_BROWSER is not defined");
+
+  const res = await fetch(`${API_URL_BROWSER}/forms/${slug}/submit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
