@@ -6,11 +6,13 @@ services:
     build:
       context: ./docker/php
       dockerfile: Dockerfile
-    container_name: laravel-backend
+    container_name: mail-form-backend
     working_dir: /var/www
     volumes:
       - ./backend:/var/www
       - ./docker/php/myphp.ini:/usr/local/etc/php/conf.d/myphp.ini
+      - /var/www/vendor
+      - vendor_composer:/var/www/vendor/composer
       - storage_framework:/var/www/storage/framework
       - bootstrap_cache:/var/www/bootstrap/cache
     networks:
@@ -23,7 +25,7 @@ services:
   # Nginx
   web:
     image: nginx:latest
-    container_name: nginx
+    container_name: mail-form-nginx
     ports:
       - "8000:80"
     volumes:
@@ -39,7 +41,7 @@ services:
   # MySQL
   db:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mail-form-mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -56,7 +58,7 @@ services:
   # phpMyAdmin
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
+    container_name: mail-form-phpmyadmin
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
@@ -70,7 +72,7 @@ services:
   # Composer
   composer:
     image: composer:latest
-    container_name: composer
+    container_name: mail-form-composer
     working_dir: /var/www
     volumes:
       - ./backend:/var/www
@@ -80,8 +82,11 @@ services:
 
   # Next.js frontend
   frontend:
-    image: node:20
-    container_name: nextjs-frontend
+    # image: node:20
+    build:
+      context: ./docker/node
+      dockerfile: Dockerfile
+    container_name: mail-form-frontend
     working_dir: /usr/src/app
     volumes:
       - ./frontend:/usr/src/app          # プロジェクトソース
@@ -96,13 +101,14 @@ services:
       - WATCHPACK_POLLING=true           # ← 補助でこれも入れると安定する
     # command: sh -c "tail -f /dev/null"  # コンテナ常駐
     # command: sh -c "npm install && npm run build && npm run export && tail -f /dev/null"
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm run dev"
 
 volumes:
   dbdata:
   nextjs_cache:
   storage_framework:
   bootstrap_cache:
+  vendor_composer:
 
 networks:
   app-network:
