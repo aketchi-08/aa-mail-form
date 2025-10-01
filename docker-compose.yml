@@ -12,6 +12,7 @@ services:
       - ./backend:/var/www
       - ./docker/php/myphp.ini:/usr/local/etc/php/conf.d/myphp.ini
       - /var/www/vendor
+      - /var/www/node_modules
       - vendor_composer:/var/www/vendor/composer
       - storage_framework:/var/www/storage/framework
       - bootstrap_cache:/var/www/bootstrap/cache
@@ -70,15 +71,15 @@ services:
       - app-network
 
   # Composer
-  composer:
-    image: composer:latest
-    container_name: mail-form-composer
-    working_dir: /var/www
-    volumes:
-      - ./backend:/var/www
-    networks:
-      - app-network
-    command: tail -f /dev/null
+  # composer:
+  #   image: composer:latest
+  #   container_name: mail-form-composer
+  #   working_dir: /var/www
+  #   volumes:
+  #     - ./backend:/var/www
+  #   networks:
+  #     - app-network
+  #   command: tail -f /dev/null
 
   # Next.js frontend
   frontend:
@@ -102,6 +103,19 @@ services:
     # command: sh -c "tail -f /dev/null"  # コンテナ常駐
     # command: sh -c "npm install && npm run build && npm run export && tail -f /dev/null"
     command: sh -c "npm run dev"
+
+  vite:
+    image: node:22-bullseye
+    container_name: mail-form-vite
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+      - /var/www/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - app-network
 
 volumes:
   dbdata:
