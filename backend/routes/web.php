@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\FormController as AdminFormController;
+
 use App\Http\Controllers\User\FormController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -31,7 +35,16 @@ Route::prefix('admin')->group(function () {
     Route::post('logout', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
     Route::middleware('auth:admin')->group(function () {
-        // Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+        // ユーザー管理（一覧・削除）
+        Route::get('users', [AdminUserController::class, 'index'])->name('admin.users.index');
+        Route::get('users/{user}', [AdminUserController::class, 'show'])->name('admin.users.show');
+        Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+
+        // フォーム管理（閲覧のみ）
+        Route::get('forms', [AdminFormController::class, 'index'])->name('admin.forms.index');
+        Route::get('forms/{form}', [AdminFormController::class, 'show'])->name('admin.forms.show');
     });
 });
 
